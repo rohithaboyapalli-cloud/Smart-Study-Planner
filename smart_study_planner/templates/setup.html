@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Planner - Setup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container glass-card">
+        <div class="header">
+            <h2>Step 1: Setup Your Studies</h2>
+            <p>Enter your daily study hours and list your upcoming exams below.</p>
+            <a href="{{ url_for('index') }}" class="back-link">← Back Home</a>
+        </div>
+
+        <form id="study-form">
+            <div class="input-group main-input">
+                <label for="study-hours">Hours willing to study per day:</label>
+                <input type="number" id="study-hours" min="1" max="24" value="4" required>
+            </div>
+            
+            <div class="subjects-header">
+                <h3>Subjects</h3>
+                <button type="button" class="btn-secondary" onclick="addSubject()">+ Add Subject</button>
+            </div>
+            
+            <div id="subjects-container">
+                <div class="subject-row">
+                    <div class="input-group">
+                        <label>Subject Name</label>
+                        <input type="text" class="sub-name" placeholder="e.g. Mathematics" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Exam Date</label>
+                        <input type="date" class="sub-date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Total Topics</label>
+                        <input type="number" class="sub-topics" placeholder="e.g. 10" min="1" required>
+                    </div>
+                    <button type="button" class="btn-danger" onclick="removeSubject(this)">✖</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-primary w-100 mt-2" id="generate-btn">Generate My Timetable</button>
+        </form>
+
+        <div id="loading" class="hidden">
+            <div class="loader"></div>
+            <p>Crunching the numbers and organizing your schedule...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

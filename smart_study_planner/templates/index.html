@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Planner - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+    <div class="landing-container">
+        <div class="glass-card text-center hero-card">
+            <h1 class="gradient-text">Smart Study Planner</h1>
+            <p class="hero-subtitle">Turn your exam stress into a structured, personalized, and highly-optimized study timetable in seconds.</p>
+            <div class="features">
+                <div class="feature-item">📅 Smart Date Planning</div>
+                <div class="feature-item">⚖️ Topic Balancing</div>
+                <div class="feature-item">🖨️ Print Ready</div>
+            </div>
+            <a href="{{ url_for('setup') }}" class="btn-primary pulse">Get Started Now</a>
+        </div>
+    </div>
+</body>
+</html>

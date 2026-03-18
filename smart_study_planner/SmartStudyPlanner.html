@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Planner</title>
+    <!-- Use Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF2E93;
+            --primary-hover: #E60073;
+            --secondary: #00E5FF;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gray: #64748B;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .view {
+            width: 100%;
+            max-width: 900px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        .text-center { text-align: center; }
+
+        h1.gradient-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #FF2E93, #FF8000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        h2 { font-size: 2rem; color: var(--dark); margin-bottom: 0.5rem; }
+        p { color: var(--gray); font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; }
+
+        .btn-primary, .btn-secondary, .btn-danger {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), #FF8000);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 46, 147, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 46, 147, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .btn-secondary:hover { background: #F1F5F9; }
+
+        .btn-danger {
+            background: #FFE4E6;
+            color: #E11D48;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-danger:hover { background: #E11D48; color: white; }
+
+        .w-100 { width: 100%; }
+        .mt-2 { margin-top: 2rem; }
+
+        .header { margin-bottom: 2rem; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start;}
+        .header-content { flex: 1; }
+
+        .main-input {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .subjects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr auto;
+            gap: 1rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            align-items: end;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .subject-row:hover { transform: translateY(-2px); }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-weight: 600; font-size: 0.95rem; color: var(--dark); }
+        input {
+            padding: 0.8rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .table-responsive { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 1rem;
+            border: 1px solid #E2E8F0;
+        }
+        th, td { padding: 1.2rem 1.5rem; text-align: left; }
+        th { background: #F1F5F9; font-weight: 700; color: var(--gray); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { border-bottom: 1px solid #F1F5F9; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #F8FAFC; }
+
+        .badge {
+            background: linear-gradient(45deg, #E0E7FF, #C7D2FE);
+            color: #4338CA;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .print-header { display: none; }
+        .error-msg { color: #E11D48; font-weight: 600; text-align: center; margin-top: 1rem; display: none; }
+
+        @media (max-width: 768px) {
+            .subject-row { grid-template-columns: 1fr; align-items: stretch; }
+            h1.gradient-text { font-size: 2.5rem; }
+            .glass-card { padding: 1.5rem; }
+            .main-input { flex-direction: column; align-items: flex-start; }
+            .header { flex-direction: column; gap: 1rem; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; display: block; }
+            .glass-card { box-shadow: none; border: none; padding: 0; width: 100%; }
+            .no-print { display: none !important; }
+            .print-header { display: block; margin-bottom: 2rem; text-align: center; }
+            table { border: 2px solid #000; border-radius: 0; }
+            th { background: #eee !important; color: #000; }
+            th, td { border: 1px solid #000; padding: 0.8rem; }
+            .badge { background: none !important; color: #000; border: 1px solid #000; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======== PAGE 1: LANDING VIEW ======== -->
+    <div id="landing-view" class="view active">
+        <div class="glass-card text-center">
+            <h1 class="gradient-text">Smart Study Planner</h1>
+            <p style="font-size: 1.3rem;">Turn your exam stress into a structured, personalized, and highly-optimized study timetable in seconds.</p>
+            <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 3rem; flex-wrap: wrap;">
+                <span style="background: white; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 600;">📅 Smart Date Planning</span>
+                <span style="background: white; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 600;">⚖️ Topic Balancing</span>
+                <span style="background: white; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 600;">🖨️ Print Ready</span>
+            </div>
+            <button class="btn-primary" onclick="switchView('setup-view')">Get Started Now</button>
+        </div>
+    </div>
+
+    <!-- ======== PAGE 2: SETUP VIEW ======== -->
+    <div id="setup-view" class="view">
+        <div class="glass-card">
+            <div class="header">
+                <div class="header-content">
+                    <h2>Setup Your Studies</h2>
+                    <p>Enter your daily study hours and list your upcoming exams below.</p>
+                </div>
+                <!-- Back Button -->
+                <button class="btn-secondary no-print" onclick="switchView('landing-view')">← Back to Start</button>
+            </div>
+
+            <form id="study-form">
+                <div class="main-input">
+                    <label for="study-hours" style="font-size: 1.1rem;">Hours willing to study per day:</label>
+                    <input type="number" id="study-hours" min="1" max="24" value="4" required style="width: 100px;">
+                </div>
+                
+                <div class="subjects-header">
+                    <h3>Your Subjects</h3>
+                    <button type="button" class="btn-secondary" onclick="addSubject()">+ Add Subject</button>
+                </div>
+                
+                <!-- Subject Entries Container -->
+                <div id="subjects-container">
+                    <div class="subject-row">
+                        <div class="input-group">
+                            <label>Subject Name</label>
+                            <input type="text" class="sub-name" placeholder="e.g. Mathematics" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Exam Date</label>
+                            <input type="date" class="sub-date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Total Topics</label>
+                            <input type="number" class="sub-topics" placeholder="e.g. 10" min="1" required>
+                        </div>
+                        <button type="button" class="btn-danger" onclick="removeSubject(this)">✖</button>
+                    </div>
+                </div>
+                
+                <div id="error-message" class="error-msg">Please fill all fields and ensure exam dates are in the future.</div>
+                
+                <button type="submit" class="btn-primary w-100 mt-2" id="generate-btn">Generate My Timetable</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======== PAGE 3: TIMETABLE VIEW ======== -->
+    <div id="timetable-view" class="view">
+        <div class="glass-card">
+            <div class="header no-print">
+                <div class="header-content">
+                    <h2>Your Smart Timetable</h2>
+                    <p>We've successfully generated your optimized study schedule!</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <!-- Go back to edit subjects -->
+                    <button class="btn-secondary" onclick="switchView('setup-view')">← Edit Subjects</button>
+                    <!-- Print Table -->
+                    <button class="btn-primary" onclick="window.print()">🖨️ Print Document</button>
+                </div>
+            </div>
+            
+            <div class="print-header">
+                <h2>My Personal Study Schedule</h2>
+                <p>Generated by Smart Study Planner</p>
+                <hr style="margin-top: 10px; border: 1px solid #ccc;">
+            </div>
+
+            <div class="table-responsive">
+                <table id="timetable-output">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Subject Assigment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Javascript drops processed schedule here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== FULL LOGIC (HTML + CSS + JS in one file) ======== -->
+    <script>
+        // Set minimum dates to dynamically always be "today"
+        function setMinDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('.sub-date').forEach(el => el.min = today);
+        }
+        
+        window.onload = setMinDates;
+
+        // Function allowing multiple pages to exist in ONE file
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Add additional subject rows to the dom
+        function addSubject() {
+            const container = document.getElementById('subjects-container');
+            const row = document.createElement('div');
+            row.className = 'subject-row';
+            const today = new Date().toISOString().split('T')[0];
+            
+            row.innerHTML = `
+                <div class="input-group">
+                    <label>Subject Name</label>
+                    <input type="text" class="sub-name" placeholder="e.g. Physics" required>
+                </div>
+                <div class="input-group">
+                    <label>Exam Date</label>
+                    <input type="date" class="sub-date" min="${today}" required>
+                </div>
+                <div class="input-group">
+                    <label>Total Topics</label>
+                    <input type="number" class="sub-topics" placeholder="e.g. 5" min="1" required>
+                </div>
+                <button type="button" class="btn-danger" onclick="removeSubject(this)">✖</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeSubject(btn) {
+            const rows = document.querySelectorAll('.subject-row');
+            if (rows.length > 1) {
+                btn.closest('.subject-row').remove();
+            } else {
+                alert("You must have at least one subject to generate a timetable.");
+            }
+        }
+
+        // Processing Logic - Entirely handled in Browser Javascript!
+        document.getElementById('study-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop normal form submit
+            
+            const studyHours = parseInt(document.getElementById('study-hours').value);
+            const rows = document.querySelectorAll('.subject-row');
+            const subjects = [];
+            
+            let isValid = true;
+            
+            // Loop through inputs and grab values
+            rows.forEach(row => {
+                const name = row.querySelector('.sub-name').value.trim();
+                const dateVal = row.querySelector('.sub-date').value;
+                const topics = parseFloat(row.querySelector('.sub-topics').value);
+                
+                if(!name || !dateVal || !topics) isValid = false;
+                
+                subjects.push({ name, date: dateVal, topics });
+            });
+            
+            const errorMsg = document.getElementById('error-message');
+            if(!isValid) {
+                errorMsg.style.display = 'block';
+                return;
+            }
+            errorMsg.style.display = 'none';
+
+            // Generate Smart Algorithm Table
+            const schedule = generateTimetable(subjects, studyHours);
+            
+            if (!schedule || schedule.length === 0) {
+                errorMsg.textContent = "Error calculating schedule. Please ensure exam dates are in the future.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Target the output table and erase past data
+            const tbody = document.querySelector('#timetable-output tbody');
+            tbody.innerHTML = '';
+            
+            // Populate the output table
+            schedule.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: #334155;">${row.date}</td>
+                    <td style="color: #64748B; font-weight: 500;">${row.time}</td>
+                    <td><span class="badge">${row.subject}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Swap the visible page over to Timetable View
+            switchView('timetable-view');
+        });
+
+        // The mathematics algorithm engine!
+        function generateTimetable(subjects, studyHours) {
+            let startDate = new Date();
+            startDate.setHours(0,0,0,0);
+            
+            let maxExamDate = new Date(startDate);
+            let parsedSubjects = [];
+            
+            subjects.forEach(s => {
+                let examParts = s.date.split('-');
+                let examDate = new Date(examParts[0], examParts[1]-1, examParts[2]);
+                examDate.setHours(0,0,0,0);
+                
+                let daysLeft = Math.ceil((examDate - startDate) / (1000 * 60 * 60 * 24));
+                if(daysLeft <= 0) return;
+                
+                if (examDate > maxExamDate) maxExamDate = examDate;
+                
+                parsedSubjects.push({
+                    name: s.name,
+                    examDate: examDate,
+                    daysLeft: daysLeft,
+                    topicsTotal: s.topics,
+                    topicsRemaining: s.topics
+                });
+            });
+            
+            if (parsedSubjects.length === 0) return null;
+            
+            let totalDays = Math.ceil((maxExamDate - startDate) / (1000 * 60 * 60 * 24));
+            let timetable = [];
+            
+            // Assign 2 hours max per block to keep focus right
+            let slotDuration = studyHours >= 2 ? 2 : 1;
+            let slotsPerDay = Math.floor(studyHours / slotDuration);
+            
+            for(let day = 0; day <= totalDays; day++) {
+                let currentDate = new Date(startDate);
+                currentDate.setDate(currentDate.getDate() + day);
+                
+                // Start studying at 4:00 PM universally everyday
+                let startHour = 16;
+                let prevSubject = null;
+                
+                for(let slot = 0; slot < slotsPerDay; slot++) {
+                    let candidates = [];
+                    
+                    for (let s of parsedSubjects) {
+                        if (s.examDate > currentDate && s.topicsRemaining > 0) {
+                            let dLeft = Math.max(1, Math.ceil((s.examDate - currentDate) / (1000 * 60 * 60 * 24)));
+                            
+                            // Algorithm: Focus shifts intelligently toward modules with shortest time & most remaining topics.
+                            let priority = s.topicsRemaining / dLeft;
+                            if (prevSubject === s.name) {
+                                // apply strict penalty to avoid doing the same subject blocks consecutively
+                                priority *= 0.1;
+                            }
+                            candidates.push({ priority: priority, subject: s });
+                        }
+                    }
+                    
+                    if (candidates.length === 0) break; // Reached the end or run out of exams
+                    
+                    // Sort priorities in descending order
+                    candidates.sort((a,b) => b.priority - a.priority);
+                    let chosen = candidates[0].subject; // Pick highest matching
+                    
+                    let endHour = startHour + slotDuration;
+                    
+                    // Display friendly AM/PM Formats
+                    let timeFormat = (h) => {
+                        let ampm = h >= 12 ? 'PM' : 'AM';
+                        let hr = h % 12;
+                        if(hr === 0) hr = 12;
+                        return `${hr}:00 ${ampm}`;
+                    };
+                    
+                    let timeStr = `${timeFormat(startHour)} - ${timeFormat(endHour)}`;
+                    
+                    // Determine how many topics they accomplished in this 1 block
+                    let coverRate = Math.max(1, chosen.topicsTotal / Math.max(1, (chosen.daysLeft * slotsPerDay * 0.8)));
+                    chosen.topicsRemaining -= coverRate;
+                    
+                    timetable.push({
+                        date: currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), // E.g., Fri, May 15
+                        time: timeStr,
+                        subject: chosen.name
+                    });
+                    
+                    prevSubject = chosen.name;
+                    startHour = endHour;
+                }
+                
+                let allTopicsLeft = parsedSubjects.reduce((acc, s) => acc + s.topicsRemaining, 0);
+                if(allTopicsLeft <= 0) break;
+            }
+            
+            return timetable;
+        }
+    </script>
+</body>
+</html>
